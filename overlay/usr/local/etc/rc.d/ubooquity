@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# PROVIDE: ubooquity
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf to enable Ubooquity:
+#
+# ubooquity_enable=<bool>        Enable at startup.           Default: NO
+# ubooquity_username=<username>  User to run as.              Default: ubooquity
+# ubooquity_libary_port=<uint>   Port for library.            Default: 2202
+# ubooquity_admin_port=<uint>    Port for administration.     Default: 2203
+# ubooquity_dbdir=<path>         Directory to store database. Default: /var/db/ubooquity
+# ubooquity_logdir=<path>        Directory to store log.      Default: /var/log
+
+. /etc/rc.subr
+
+name="ubooquity"
+rcvar="${name}_enable"
+load_rc_config "${name}"
+
+: "${ubooquity_enable:="NO"}"
+: "${ubooquity_username:="ubooquity"}"
+: "${ubooquity_library_port:="2202"}"
+: "${ubooquity_admin_port:="2203"}"
+: "${ubooquity_workdir:="/var/db/ubooquity"}"
+: "${ubooquity_logdir:="/var/log"}"
+
+command=/usr/sbin/daemon
+pidfile=/var/run/ubooquity.pid
+jarfile=/usr/local/etc/ubooquity/Ubooquity.jar
+logfile="${ubooquity_logdir}/ubooquity.log"
+# Uncomment the following line to allocate more memory to Ubooquity
+#mem_opt=-Xmx512m
+
+command_args="-u \"${ubooquity_username}\" -r -P \"${pidfile}\" -f -o \"${logfile}\" -H \
+    /usr/local/bin/java \
+        ${mem_opt} \
+        -jar \"${jarfile}\" \
+            --headless \
+            --workdir \"${ubooquity_workdir}\" \
+            --libraryport \"${ubooquity_library_port}\" \
+            --adminport \"${ubooquity_admin_port}\" \
+            --remoteadmin"
+
+run_rc_command "$1"
