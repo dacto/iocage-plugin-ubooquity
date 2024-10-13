@@ -2,7 +2,7 @@
 
 set -eu
 
-VERSION=2.1.2
+VERSION=2.1.5
 INSTALLDIR=/usr/local/etc/ubooquity
 WORKDIR=/var/db/ubooquity
 
